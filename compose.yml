@@ -1,0 +1,26 @@
+version: "3"
+services:
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./data/redis:/data"
+      - "./redis.conf:/etc/redis.conf"
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: builder
+    # command: ["sh", "-c", "make watch-account"]
+    command: ["./server"]
+    tty: true
+    env_file:
+      - ./.env
+    ports:
+      - "8088:8088/udp"
+    # volumes:
+    #   - ".:/go/src/server:cached"
+    depends_on:
+      - redis
