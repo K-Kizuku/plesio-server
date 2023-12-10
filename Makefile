@@ -7,8 +7,8 @@ setup-tools:
 	@if ! [ -x /usr/local/bin/golangci-lint ]; then brew install golangci/tap/golangci-lint ; fi
 
 ##### exec
-go-run:
-	cd go;go run main.go
+run:
+	go run ./cmd/main.go
 
 ##### scaffing
 
