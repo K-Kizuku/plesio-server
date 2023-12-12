@@ -3,12 +3,16 @@
 
 setup-tools:
 	@if [ -z `command -v air` ]; then go install github.com/cosmtrek/air@latest ; fi
-	@if ! [ -x ${GOPATH}/bin/buf ]; then go install github.com/bufbuild/buf/cmd/buf@latest  ; fi
 	@if ! [ -x /usr/local/bin/golangci-lint ]; then brew install golangci/tap/golangci-lint ; fi
+	@if ! [ -x ${GOPATH}/bin/wire ]; then go install github.com/google/wire/cmd/wire@latest ;fi
 
 ##### exec
 run:
 	go run ./cmd/main.go
+
+##### DI
+wire:
+	wire gen
 
 ##### scaffing
 
