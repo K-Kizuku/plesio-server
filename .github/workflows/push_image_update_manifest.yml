@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: rockcutter/plesio_infra
+          repository: rockcutter/plesio-infra
           token: ${{ secrets.INFRA_REPOSITORY_ACCESS_TOKEN }}
 
       - name: git
