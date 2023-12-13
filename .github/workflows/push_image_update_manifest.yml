@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: rockcutter/plesio_infra_test
+          repository: rockcutter/plesio_infra
           token: ${{ secrets.INFRA_REPOSITORY_ACCESS_TOKEN }}
 
       - name: git
@@ -48,7 +48,7 @@ jobs:
         run: |
           make generate_manifest DOCKER_TAG=${{ github.sha }}
           git add .
-          git commit -m "generate manifest file tag: ${{ github.sha }}"
+          git commit -m "🤖 generate manifest file. tag: ${{ github.sha }}"
 
       - name: push
         run: |
