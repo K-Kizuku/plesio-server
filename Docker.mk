@@ -1,10 +1,10 @@
 .PHONY: docker/build_for_artifact_registry docker/push_for_artifact_registry
 
-DOCKER_TAG = ''
-_DOCKER_TAG = ''
+DOCKER_TAG = 
+_DOCKER_TAG = 
 
-ifneq ($(DOCKER_TAG),'')
-  _DOCKER_TAG = ':$(DOCKER_TAG)'
+ifneq ($(DOCKER_TAG),)
+  _DOCKER_TAG = :$(DOCKER_TAG)
 endif
 
 docker/build_for_artifact_registry:
