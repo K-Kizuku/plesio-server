@@ -1,0 +1,56 @@
+name: push docker image and update manifest of infra repository
+
+on:
+  push:
+    branches: [ "main", "test_build_docker_and_update_manifest_ci" ]
+  workflow_dispatch:
+
+jobs:
+  docker-image-build-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Google Cloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_PLESIO_KEY }}
+          project_id: hallowed-spider-407610
+
+      - name: Configure docker for artifact registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: docker build
+        run: |
+          make -f ci.mk docker/build_for_artifact_registry DOCKER_TAG=${{ github.sha }}
+
+      - name: docker push
+        run: |
+          make -f ci.mk docker/push_for_artifact_registry DOCKER_TAG=${{ github.sha }}
+
+  update-manifest:
+    needs: docker-image-build-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: rockcutter/plesio-infra
+          token: ${{ secrets.INFRA_REPOSITORY_ACCESS_TOKEN }}
+
+      - name: git
+        run: |
+          git config user.name "actions"
+          git config user.email "actions@github.com"
+
+      - name: make generate_manifest and commit
+        run: |
+          make generate_manifest DOCKER_TAG=${{ github.sha }}
+          git add .
+          git commit -m "🤖 generate manifest file. tag: ${{ github.sha }}"
+
+      - name: push
+        run: |
+          git push
+
