@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/K-Kizuku/plesio-server/app/domain/repository"
+	"github.com/K-Kizuku/plesio-server/utils/config"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -13,10 +14,10 @@ type Client struct {
 
 func NewDataStoreClient() repository.IDataStoreRepository {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-		PoolSize: 1000,
+		Addr:     config.RedisAddress,
+		Password: config.RedisPassword,
+		DB:       config.RedisDB,
+		PoolSize: config.RedisPoolSize,
 	})
 	return &Client{
 		Con: rdb,
