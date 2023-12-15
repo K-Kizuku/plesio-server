@@ -25,9 +25,11 @@ func NewDataStoreClient() repository.IDataStoreRepository {
 }
 
 func (c *Client) Get(ctx context.Context, key string) (string, error) {
-	return "", nil
+	val, err := c.Con.Get(ctx, key).Result()
+	return val, err
 }
 
 func (c *Client) Set(ctx context.Context, key, value string) (string, error) {
-	return "", nil
+	val, err := c.Con.Set(ctx, key, value, 0).Result()
+	return val, err
 }
