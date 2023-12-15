@@ -66,4 +66,3 @@ locust/down:
 	cd locust;terraform destroy --auto-approve
 
 
-
