@@ -43,7 +43,7 @@ func (c *Client) Get(key string) (interface{}, bool) {
 	return val, founded
 }
 
-func (c *Client) Set(key, value string, cost int64) bool {
+func (c *Client) Set(key string, value interface{}, cost int64) bool {
 	added := c.Con.Set(key, value, 1)
 	return added
 }
