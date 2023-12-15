@@ -9,9 +9,10 @@ type ClientRepository struct {
 	DataStoreRepo repository.IDataStoreRepository
 }
 
-func NewClientRepository(inMemoryRepo repository.IInMemoryCacheRepository, DataStore repository.IDataStoreRepository) repository.IClientRepository {
+func NewClientRepository(inMemoryRepo repository.IInMemoryCacheRepository, dataStore repository.IDataStoreRepository) repository.IClientRepository {
 	return &ClientRepository{
-		InMemoryRepo: inMemoryRepo,
+		InMemoryRepo:  inMemoryRepo,
+		DataStoreRepo: dataStore,
 	}
 }
 
