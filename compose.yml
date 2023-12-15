@@ -1,13 +1,5 @@
 version: "3"
 services:
-  redis:
-    image: "redis:latest"
-    ports:
-      - "6379:6379"
-    volumes:
-      - "./data/redis:/data"
-      - "./redis.conf:/etc/redis.conf"
-
   app:
     build:
       context: .
@@ -24,3 +16,48 @@ services:
     #   - ".:/go/src/server:cached"
     depends_on:
       - redis
+      - db
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./data/redis:/data"
+      - "./redis.conf:/etc/redis.conf"
+
+  db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=p@ssword
+      - POSTGRES_DB=db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - data-volume:/var/lib/postgresql/data
+      - data-volume:/var/log
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d onden_app"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+
+  migration:
+    build:
+      context: .
+      dockerfile: docker/migration/Dockerfile
+      # target: base
+    working_dir: /migration
+    # env_file:
+    #   - docker/migration/.env
+    environment:
+      - GOOSE_DRIVER=${GOOSE_DRIVER:-postgres}
+      - GOOSE_DBSTRING=${GOOSE_DBSTRING:-host=test-db user=root dbname=onden_app password=p@ssword}
+    volumes:
+      - ./apps/account/app/infra/db/migrations:/migration
+    depends_on:
+      db:
+        condition: service_healthy

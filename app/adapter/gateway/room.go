@@ -2,14 +2,14 @@ package gateway
 
 import (
 	"github.com/K-Kizuku/plesio-server/app/domain/repository"
-	"github.com/K-Kizuku/plesio-server/app/driver/ristretto"
 )
 
 type RoomRepository struct {
-	InMemoryRepo *ristretto.Client
+	InMemoryRepo repository.IInMemoryCacheRepository
+	DataStore    repository.IDataStoreRepository
 }
 
-func NewRoomRepository(inMemoryRepo *ristretto.Client) repository.IRoomRepository {
+func NewRoomRepository(inMemoryRepo repository.IInMemoryCacheRepository, dataStore repository.IDataStoreRepository) repository.IRoomRepository {
 	return &RoomRepository{
 		InMemoryRepo: inMemoryRepo,
 	}

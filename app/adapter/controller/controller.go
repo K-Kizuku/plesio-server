@@ -15,10 +15,10 @@ type IController interface {
 }
 type Controller struct {
 	Ln                *net.UDPConn
-	MeetingController *MeetingController
+	MeetingController IMeetingController
 }
 
-func NewController(ln *net.UDPConn, meetingController *MeetingController) IController {
+func NewController(ln *net.UDPConn, meetingController IMeetingController) IController {
 	return &Controller{
 		Ln:                ln,
 		MeetingController: meetingController,

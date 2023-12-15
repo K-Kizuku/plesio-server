@@ -1,2 +1,3 @@
 .env
 /data/redis
+.terraform.lock.hcl

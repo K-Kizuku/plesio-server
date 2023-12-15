@@ -1,10 +1,12 @@
 package usecase
 
-import "github.com/K-Kizuku/plesio-server/app/adapter/gateway"
+import (
+	"github.com/K-Kizuku/plesio-server/app/domain/repository"
+)
 
 type MeetingUsecase struct {
-	ClientRepository *gateway.ClientRepository
-	RoomRepository   *gateway.RoomRepository
+	ClientRepository repository.IClientRepository
+	RoomRepository   repository.IRoomRepository
 }
 
 type IMeetingUsecase interface {
@@ -14,7 +16,7 @@ type IMeetingUsecase interface {
 	DeleteRoom()
 }
 
-func NewMeetingUsecase(clientRepository *gateway.ClientRepository, roomRepository *gateway.RoomRepository) IMeetingUsecase {
+func NewMeetingUsecase(clientRepository repository.IClientRepository, roomRepository repository.IRoomRepository) IMeetingUsecase {
 	return &MeetingUsecase{
 		ClientRepository: clientRepository,
 		RoomRepository:   roomRepository,

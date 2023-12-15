@@ -12,11 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/K-Kizuku/plesio-server/app/adapter/controller"
-	"github.com/K-Kizuku/plesio-server/app/adapter/gateway"
 	"github.com/K-Kizuku/plesio-server/app/di"
-	"github.com/K-Kizuku/plesio-server/app/driver/ristretto"
-	"github.com/K-Kizuku/plesio-server/app/usecase"
 )
 
 func Server() {
@@ -52,24 +48,25 @@ func run() error {
 	// 	InMemoryRepo: &ristretto.Client{},
 	// })
 	// l := controller.NewMeetingContrallor(k)
-	controller.NewController(ln, &controller.MeetingController{
-		MeetingUsecase: &usecase.MeetingUsecase{
-			ClientRepository: &gateway.ClientRepository{
-				InMemoryRepo: &ristretto.Client{},
-			},
-			RoomRepository: &gateway.RoomRepository{
-				InMemoryRepo: &ristretto.Client{},
-			},
-		},
-	})
+	// controller.NewController(ln, &controller.MeetingController{
+	// 	MeetingUsecase: &usecase.MeetingUsecase{
+	// 		ClientRepository: &gateway.ClientRepository{
+	// 			InMemoryRepo: &ristretto.Client{},
+	// 		},
+	// 		RoomRepository: &gateway.RoomRepository{
+	// 			InMemoryRepo: &ristretto.Client{},
+	// 		},
+	// 	},
+	// })
 	c := di.Init(ln)
-	fmt.Print(c)
+	// fmt.Print(c)
+	c.Run()
 
 	log.Println("Starting udp server...")
 
 	go func() {
 		for {
-			err = handle(ln)
+			err = c.Run()
 			if err != nil {
 				errCh <- err
 			}
