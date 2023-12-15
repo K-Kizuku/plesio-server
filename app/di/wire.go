@@ -8,6 +8,7 @@ import (
 
 	"github.com/K-Kizuku/plesio-server/app/adapter/controller"
 	"github.com/K-Kizuku/plesio-server/app/adapter/gateway"
+	"github.com/K-Kizuku/plesio-server/app/driver/redis"
 	"github.com/K-Kizuku/plesio-server/app/driver/ristretto"
 	"github.com/K-Kizuku/plesio-server/app/usecase"
 	"github.com/google/wire"
@@ -18,6 +19,7 @@ func Init(ln *net.UDPConn) controller.IController {
 		gateway.NewClientRepository,
 		gateway.NewRoomRepository,
 		ristretto.NewCacheClient,
+		redis.NewDataStoreClient,
 		usecase.NewMeetingUsecase,
 		controller.NewMeetingContrallor,
 		controller.NewController,

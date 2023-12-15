@@ -8,7 +8,7 @@ RUN go mod download
 RUN go install github.com/cosmtrek/air@latest
 
 COPY . .
-RUN go build -o server ./cmd/main.go
+RUN go build -o server ./cmd/.
 
 FROM alpine:3.18 AS app
 

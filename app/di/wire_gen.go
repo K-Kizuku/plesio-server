@@ -9,6 +9,7 @@ package di
 import (
 	"github.com/K-Kizuku/plesio-server/app/adapter/controller"
 	"github.com/K-Kizuku/plesio-server/app/adapter/gateway"
+	"github.com/K-Kizuku/plesio-server/app/driver/redis"
 	"github.com/K-Kizuku/plesio-server/app/driver/ristretto"
 	"github.com/K-Kizuku/plesio-server/app/usecase"
 	"net"
@@ -18,8 +19,9 @@ import (
 
 func Init(ln *net.UDPConn) controller.IController {
 	iInMemoryCacheRepository := ristretto.NewCacheClient()
-	iClientRepository := gateway.NewClientRepository(iInMemoryCacheRepository)
-	iRoomRepository := gateway.NewRoomRepository(iInMemoryCacheRepository)
+	iDataStoreRepository := redis.NewDataStoreClient()
+	iClientRepository := gateway.NewClientRepository(iInMemoryCacheRepository, iDataStoreRepository)
+	iRoomRepository := gateway.NewRoomRepository(iInMemoryCacheRepository, iDataStoreRepository)
 	iMeetingUsecase := usecase.NewMeetingUsecase(iClientRepository, iRoomRepository)
 	iMeetingController := controller.NewMeetingContrallor(iMeetingUsecase)
 	iController := controller.NewController(ln, iMeetingController)

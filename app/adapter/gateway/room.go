@@ -12,6 +12,7 @@ type RoomRepository struct {
 func NewRoomRepository(inMemoryRepo repository.IInMemoryCacheRepository, dataStore repository.IDataStoreRepository) repository.IRoomRepository {
 	return &RoomRepository{
 		InMemoryRepo: inMemoryRepo,
+		DataStore:    dataStore,
 	}
 }
 
