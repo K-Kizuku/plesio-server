@@ -1,7 +1,7 @@
 import socket
 import sys
 
-server_addr = ('', 8254)
+server_addr = ('', 8088)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
