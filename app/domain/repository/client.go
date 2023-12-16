@@ -1,6 +1,8 @@
 package repository
 
+import "net"
+
 type IClientRepository interface {
-	ReadMessage()
-	WriteMessage()
+	JoinRoom(roomID string, client *net.UDPAddr) error
+	ExitRoom(roomID string, client *net.UDPAddr) error
 }
