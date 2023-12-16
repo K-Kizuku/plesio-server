@@ -116,8 +116,10 @@ func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string,
 			if _, err := ln.WriteToUDP(b, &client); err != nil {
 				return err
 			}
+			return nil
 		}
 	}
+
 	return nil
 }
 
