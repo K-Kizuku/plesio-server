@@ -17,13 +17,24 @@ import (
 
 // Injectors from wire.go:
 
-func Init(ln *net.UDPConn) controller.IController {
+func InitUDP(ln *net.UDPConn) controller.IController {
 	iInMemoryCacheRepository := ristretto.NewCacheClient()
 	iDataStoreRepository := redis.NewDataStoreClient()
 	iClientRepository := gateway.NewClientRepository(iInMemoryCacheRepository, iDataStoreRepository)
 	iRoomRepository := gateway.NewRoomRepository(iInMemoryCacheRepository, iDataStoreRepository)
 	iMeetingUsecase := usecase.NewMeetingUsecase(iClientRepository, iRoomRepository)
 	iMeetingController := controller.NewMeetingContrallor(iMeetingUsecase)
-	iController := controller.NewController(ln, iMeetingController)
+	iController := controller.NewUDPController(ln, iMeetingController)
+	return iController
+}
+
+func InitTCP(ln *net.TCPConn) controller.IController {
+	iInMemoryCacheRepository := ristretto.NewCacheClient()
+	iDataStoreRepository := redis.NewDataStoreClient()
+	iClientRepository := gateway.NewClientRepository(iInMemoryCacheRepository, iDataStoreRepository)
+	iRoomRepository := gateway.NewRoomRepository(iInMemoryCacheRepository, iDataStoreRepository)
+	iMeetingUsecase := usecase.NewMeetingUsecase(iClientRepository, iRoomRepository)
+	iMeetingController := controller.NewMeetingContrallor(iMeetingUsecase)
+	iController := controller.NewTCPController(ln, iMeetingController)
 	return iController
 }

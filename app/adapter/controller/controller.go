@@ -13,26 +13,50 @@ var buf = make([]byte, 5)
 type IController interface {
 	Run() error
 }
-type Controller struct {
-	Ln                *net.UDPConn
+type UDPController struct {
+	LnUDP             *net.UDPConn
 	MeetingController IMeetingController
 }
 
-func NewController(ln *net.UDPConn, meetingController IMeetingController) IController {
-	return &Controller{
-		Ln:                ln,
+type TCPController struct {
+	LnTCP             *net.TCPConn
+	MeetingController IMeetingController
+}
+
+func NewUDPController(lnUDP *net.UDPConn, meetingController IMeetingController) IController {
+	return &UDPController{
+		LnUDP:             lnUDP,
 		MeetingController: meetingController,
 	}
 }
 
-func (c *Controller) Run() error {
+func NewTCPController(lnTCP *net.TCPConn, meetingController IMeetingController) IController {
+	return &TCPController{
+		LnTCP:             lnTCP,
+		MeetingController: meetingController,
+	}
+}
+
+func (c *UDPController) Run() error {
 	mux.Lock()
 	defer mux.Unlock()
-	n, addr, err := c.Ln.ReadFromUDP(buf)
+	n, addr, err := c.LnUDP.ReadFromUDP(buf)
 	if err != nil {
 		return err
 	}
-	c.Ln.WriteToUDP([]byte(fmt.Sprintf("%d, ok\n", 0)), addr)
+	c.LnUDP.WriteToUDP([]byte(fmt.Sprintf("%d, ok\n", 0)), addr)
+	log.Println(n)
+	return nil
+}
+
+func (c *TCPController) Run() error {
+	mux.Lock()
+	defer mux.Unlock()
+	n, err := c.LnTCP.Read(buf)
+	if err != nil {
+		return err
+	}
+	c.LnTCP.Write([]byte(fmt.Sprintf("%d, ok\n", 0)))
 	log.Println(n)
 	return nil
 }

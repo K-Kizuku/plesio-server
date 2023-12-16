@@ -3,7 +3,6 @@ package udp
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -32,15 +31,16 @@ func run() error {
 	signal.Notify(termCh, syscall.SIGKILL, syscall.SIGINT)
 	errCh := make(chan error, 1)
 
-	udpAddr := &net.UDPAddr{
+	tcpAddr := &net.TCPAddr{
 		IP:   net.ParseIP("0.0.0.0"),
-		Port: 8088,
+		Port: 8089,
 	}
-	ln, err := net.ListenUDP("udp", udpAddr)
+	ln, err := net.ListenTCP("tcp", tcpAddr)
 	if err != nil {
 		return err
 	}
 	defer ln.Close()
+	conn, err := ln.AcceptTCP()
 	// ri, _ := ristretto.NewCacheClient()
 	// h := gateway.NewRoomRepository(ri)
 	// g := gateway.NewClientRepository(&ristretto.Client{})
@@ -58,7 +58,7 @@ func run() error {
 	// 		},
 	// 	},
 	// })
-	c := di.InitUDP(ln)
+	c := di.InitTCP(conn)
 	// fmt.Print(c)
 	c.Run()
 
@@ -82,18 +82,5 @@ func run() error {
 		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 	}
-	return nil
-}
-
-func handle(ln *net.UDPConn) error {
-	mux.Lock()
-	defer mux.Unlock()
-	n, addr, err := ln.ReadFromUDP(buf)
-	if err != nil {
-		return err
-	}
-	ln.WriteToUDP([]byte(fmt.Sprintf("%d, ok\n", i)), addr)
-	log.Println(n)
-	i++
 	return nil
 }
