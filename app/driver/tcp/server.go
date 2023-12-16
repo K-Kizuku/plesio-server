@@ -41,32 +41,13 @@ func run() error {
 	}
 	defer ln.Close()
 	conn, err := ln.AcceptTCP()
-	// ri, _ := ristretto.NewCacheClient()
-	// h := gateway.NewRoomRepository(ri)
-	// g := gateway.NewClientRepository(&ristretto.Client{})
-	// k := usecase.NewMeetingUsecase(&gateway.ClientRepository{
-	// 	InMemoryRepo: &ristretto.Client{},
-	// })
-	// l := controller.NewMeetingContrallor(k)
-	// controller.NewController(ln, &controller.MeetingController{
-	// 	MeetingUsecase: &usecase.MeetingUsecase{
-	// 		ClientRepository: &gateway.ClientRepository{
-	// 			InMemoryRepo: &ristretto.Client{},
-	// 		},
-	// 		RoomRepository: &gateway.RoomRepository{
-	// 			InMemoryRepo: &ristretto.Client{},
-	// 		},
-	// 	},
-	// })
 	c := di.InitTCP(conn)
-	// fmt.Print(c)
-	c.Run()
 
 	log.Println("Starting udp server...")
 
 	go func() {
 		for {
-			err = c.Run()
+			err = c.Run(ctx)
 			if err != nil {
 				errCh <- err
 			}
@@ -79,7 +60,7 @@ func run() error {
 	case err = <-errCh:
 		return err
 	case <-ctx.Done():
-		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		_, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 	}
 	return nil

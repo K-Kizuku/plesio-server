@@ -1,5 +1,5 @@
 package controller
 
-func (c *Controller) ChatController() {
+// func (c *Controller) ChatController() {
 
-}
+// }
