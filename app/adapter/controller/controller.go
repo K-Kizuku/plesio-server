@@ -3,14 +3,14 @@ package controller
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net"
+	"strings"
 	"sync"
 )
 
 var mux sync.RWMutex
-var buf = make([]byte, 5)
+var buf = make([]byte, 70000)
 
 type IController interface {
 	Run(ctx context.Context) error
@@ -47,16 +47,17 @@ func (c *UDPController) Run(ctx context.Context) error {
 		return err
 	}
 	req := &Protocol{}
-	if err := json.Unmarshal(buf, req); err != nil {
+	buf := strings.Trim(string(buf), "\x00")
+	if err := json.Unmarshal([]byte(buf), req); err != nil {
 		return err
 	}
 	switch req.Type {
 	case "AA":
-		if err := c.MeetingController.BroadcastMessage(ctx, req.Header.RoomID, "", addr, c.LnUDP); err != nil {
+		if err := c.MeetingController.BroadcastMessage(ctx, req.Header.RoomID, req.Header.RoomID, addr, c.LnUDP); err != nil {
 			return err
 		}
 	case "audio":
-		if err := c.MeetingController.BroadcastAudio(ctx, req.Header.RoomID, "", addr, c.LnUDP); err != nil {
+		if err := c.MeetingController.BroadcastAudio(ctx, req.Header.RoomID, req.Header.RoomID, addr, c.LnUDP); err != nil {
 			return err
 		}
 	case "comment":
@@ -75,7 +76,6 @@ func (c *UDPController) Run(ctx context.Context) error {
 		}
 
 	}
-	c.LnUDP.WriteToUDP([]byte(fmt.Sprintf("%d, ok\n", 0)), addr)
 	return nil
 }
 

@@ -16,13 +16,12 @@ import (
 
 func Server() {
 	if err := run(); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 }
 
 var mux sync.RWMutex
-var buf = make([]byte, 5)
-var i = 1
+var buf = make([]byte, 70000)
 
 func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, os.Interrupt, os.Kill)
