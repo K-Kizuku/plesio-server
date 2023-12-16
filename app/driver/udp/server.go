@@ -52,14 +52,16 @@ func run() error {
 		}
 	}()
 
-	select {
-	case <-termCh:
-		return errors.New("terminated by signal")
-	case err = <-errCh:
-		return err
-	case <-ctx.Done():
-		_, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
+	for {
+		select {
+		case <-termCh:
+			return errors.New("terminated by signal")
+		case err = <-errCh:
+			log.Println(err)
+		case <-ctx.Done():
+			_, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+			return nil
+		}
 	}
-	return nil
 }

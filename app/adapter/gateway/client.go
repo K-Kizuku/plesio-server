@@ -36,7 +36,9 @@ func (c *ClientRepository) JoinRoom(ctx context.Context, roomID string, client *
 	if err != nil {
 		log.Println(err)
 	}
-	c.DataStoreRepo.Set(ctx, roomID, string(b))
+	if _, err := c.DataStoreRepo.Set(ctx, roomID, string(b)); err != nil {
+		return err
+	}
 	return nil
 }
 
