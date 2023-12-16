@@ -1,6 +1,9 @@
 package repository
 
+import "context"
+
 type IInMemoryCacheRepository interface {
-	Get(key string) (interface{}, bool)
-	Set(key string, value interface{}) bool
+	Get(ctx context.Context, key string) (interface{}, bool)
+	Set(ctx context.Context, key string, value interface{}) bool
+	Delete(ctx context.Context, key string)
 }

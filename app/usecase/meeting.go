@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"context"
+	"net"
+
 	"github.com/K-Kizuku/plesio-server/app/domain/repository"
 )
 
@@ -10,10 +13,9 @@ type MeetingUsecase struct {
 }
 
 type IMeetingUsecase interface {
-	JoinRoom()
-	ExitRoom()
-	CreateRoom()
-	DeleteRoom()
+	CreateRoom(ctx context.Context) (string, error)
+	JoinRoom(ctx context.Context, roomID string, client *net.UDPAddr) error
+	ExitRoom(ctx context.Context, roomID string, client *net.UDPAddr) error
 }
 
 func NewMeetingUsecase(clientRepository repository.IClientRepository, roomRepository repository.IRoomRepository) IMeetingUsecase {
@@ -23,18 +25,12 @@ func NewMeetingUsecase(clientRepository repository.IClientRepository, roomReposi
 	}
 }
 
-func (m *MeetingUsecase) JoinRoom() {
-
+func (m *MeetingUsecase) CreateRoom(ctx context.Context) (string, error) {
+	return "", nil
 }
-
-func (m *MeetingUsecase) CreateRoom() {
-
+func (m *MeetingUsecase) JoinRoom(ctx context.Context, roomID string, client *net.UDPAddr) error {
+	return nil
 }
-
-func (m *MeetingUsecase) ExitRoom() {
-
-}
-
-func (m *MeetingUsecase) DeleteRoom() {
-
+func (m *MeetingUsecase) ExitRoom(ctx context.Context, roomID string, client *net.UDPAddr) error {
+	return nil
 }

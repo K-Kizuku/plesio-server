@@ -1,8 +1,11 @@
 package repository
 
-import "net"
+import (
+	"context"
+	"net"
+)
 
 type IClientRepository interface {
-	JoinRoom(roomID string, client *net.UDPAddr) error
-	ExitRoom(roomID string, client *net.UDPAddr) error
+	JoinRoom(ctx context.Context, roomID string, client *net.UDPAddr) error
+	ExitRoom(ctx context.Context, roomID string, client *net.UDPAddr) error
 }
