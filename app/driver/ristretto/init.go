@@ -14,7 +14,7 @@ type Client struct {
 func NewCacheClient() repository.IInMemoryCacheRepository {
 	cache, err := ristretto.NewCache(&ristretto.Config{
 		NumCounters: 1e7,     // number of keys to track frequency of (10M).
-		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		MaxCost:     1 << 24, // maximum cost of cache (1GB).
 		BufferItems: 64,      // number of keys per Get buffer.
 	})
 	if err != nil {
@@ -28,9 +28,9 @@ func NewCacheClient() repository.IInMemoryCacheRepository {
 
 func (c *Client) Init() (*ristretto.Cache, error) {
 	cache, err := ristretto.NewCache(&ristretto.Config{
-		NumCounters: 1e7,     // number of keys to track frequency of (10M).
-		MaxCost:     1 << 30, // maximum cost of cache (1GB).
-		BufferItems: 64,      // number of keys per Get buffer.
+		NumCounters: 80000,  // number of keys to track frequency of (10M).
+		MaxCost:     1 << 6, // maximum cost of cache (1GB).
+		BufferItems: 64,     // number of keys per Get buffer.
 	})
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (c *Client) Get(key string) (interface{}, bool) {
 	return val, founded
 }
 
-func (c *Client) Set(key string, value interface{}, cost int64) bool {
+func (c *Client) Set(key string, value interface{}) bool {
 	added := c.Con.Set(key, value, 1)
 	return added
 }

@@ -1,6 +1,8 @@
 package gateway
 
 import (
+	"net"
+
 	"github.com/K-Kizuku/plesio-server/app/domain/repository"
 )
 
@@ -16,9 +18,9 @@ func NewClientRepository(inMemoryRepo repository.IInMemoryCacheRepository, dataS
 	}
 }
 
-func (c *ClientRepository) ReadMessage() {
+func (c *ClientRepository) JoinRoom(roomID string, client *net.UDPAddr) error {
 }
 
-func (c *ClientRepository) WriteMessage() {
+func (c *ClientRepository) ExitRoom(roomID string, client *net.UDPAddr) error {
 
 }
