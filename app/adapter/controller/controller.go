@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -11,7 +12,7 @@ var mux sync.RWMutex
 var buf = make([]byte, 5)
 
 type IController interface {
-	Run() error
+	Run(ctx context.Context) error
 }
 type UDPController struct {
 	LnUDP             *net.UDPConn
@@ -37,7 +38,7 @@ func NewTCPController(lnTCP *net.TCPConn, meetingController IMeetingController) 
 	}
 }
 
-func (c *UDPController) Run() error {
+func (c *UDPController) Run(ctx context.Context) error {
 	mux.Lock()
 	defer mux.Unlock()
 	n, addr, err := c.LnUDP.ReadFromUDP(buf)
@@ -49,7 +50,7 @@ func (c *UDPController) Run() error {
 	return nil
 }
 
-func (c *TCPController) Run() error {
+func (c *TCPController) Run(ctx context.Context) error {
 	mux.Lock()
 	defer mux.Unlock()
 	n, err := c.LnTCP.Read(buf)
