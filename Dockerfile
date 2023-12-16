@@ -1,5 +1,5 @@
 # Use golang 1.21 as the builder stage
-FROM golang:1.21 AS builder
+FROM golang:1.21-alpine3.19 AS builder
 
 # Set the working directory inside the container
 WORKDIR /go/src
@@ -20,8 +20,10 @@ RUN go build -o server ./cmd/.
 # Use alpine 3.18 for the final stage
 FROM alpine:3.18 AS app
 
+WORKDIR /usr/local/bin
+
 # Copy the compiled server from the builder stage
-COPY --from=builder /go/src/server /usr/local/bin/server
+COPY --from=builder /go/src/server /usr/local/bin
 
 # Install CA certificates, required for TLS/SSL
 RUN apk add --no-cache ca-certificates
