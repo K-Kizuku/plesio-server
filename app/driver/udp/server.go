@@ -3,7 +3,6 @@ package udp
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -42,8 +41,6 @@ func run() error {
 	}
 	defer ln.Close()
 	c := di.InitUDP(ln)
-	// fmt.Print(c)
-	c.Run(ctx)
 
 	log.Println("Starting udp server...")
 
@@ -62,21 +59,8 @@ func run() error {
 	case err = <-errCh:
 		return err
 	case <-ctx.Done():
-		_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		_, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 	}
-	return nil
-}
-
-func handle(ln *net.UDPConn) error {
-	mux.Lock()
-	defer mux.Unlock()
-	n, addr, err := ln.ReadFromUDP(buf)
-	if err != nil {
-		return err
-	}
-	ln.WriteToUDP([]byte(fmt.Sprintf("%d, ok\n", i)), addr)
-	log.Println(n)
-	i++
 	return nil
 }

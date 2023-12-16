@@ -26,7 +26,7 @@ type Client struct {
 	Clients []net.UDPAddr `json:"client"`
 }
 
-func (r *RoomRepository) CreateRoom(ctx context.Context, owner net.UDPAddr) (string, error) {
+func (r *RoomRepository) CreateRoom(ctx context.Context) (string, error) {
 	roomID, err := uuid.Generate()
 	if err != nil {
 		return "", err

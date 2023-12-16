@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -20,7 +20,7 @@ func LoadEnv() {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		fmt.Printf("読み込み出来ませんでした: %v", err)
+		log.Printf("読み込み出来ませんでした: %v", err)
 	}
 
 	RedisAddress = os.Getenv("REDIS_ADDRESS")
