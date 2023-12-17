@@ -32,6 +32,11 @@ func (c *ClientRepository) JoinRoom(ctx context.Context, roomID string, client *
 	if err := json.Unmarshal([]byte(value), clients); err != nil {
 		return err
 	}
+	for _, v := range clients.Clients {
+		if v.String() == client.String() {
+			return nil
+		}
+	}
 	clients.Clients = append(clients.Clients, *client)
 	b, err := json.Marshal(clients)
 	if err != nil {
