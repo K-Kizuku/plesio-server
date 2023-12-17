@@ -10,7 +10,6 @@ import (
 )
 
 var mux sync.RWMutex
-var buf = make([]byte, 70000)
 
 type IController interface {
 	Run(ctx context.Context) error
@@ -42,14 +41,16 @@ func NewTCPController(lnTCP *net.TCPConn, meetingController IMeetingController) 
 func (c *UDPController) Run(ctx context.Context) error {
 	mux.Lock()
 	defer mux.Unlock()
+	buf := make([]byte, 70000)
 	_, addr, err := c.LnUDP.ReadFromUDP(buf)
 	if err != nil {
 		return err
 	}
 	req := &Protocol{}
-	buf := strings.Trim(string(buf), "\x00")
+	b := strings.Trim(string(buf), "\x00")
 
-	if err := json.Unmarshal([]byte(buf), req); err != nil {
+	// buf := strings.Replace(string(buf), "\000", "", -1)
+	if err := json.Unmarshal([]byte(b), req); err != nil {
 		log.Print(buf)
 		return err
 	}
@@ -82,13 +83,13 @@ func (c *UDPController) Run(ctx context.Context) error {
 }
 
 func (c *TCPController) Run(ctx context.Context) error {
-	mux.Lock()
-	defer mux.Unlock()
-	n, err := c.LnTCP.Read(buf)
-	if err != nil {
-		return err
-	}
-	c.LnTCP.Write([]byte("しめさばくんありがとう"))
-	log.Println(n)
+	// mux.Lock()
+	// defer mux.Unlock()
+	// n, err := c.LnTCP.Read(buf)
+	// if err != nil {
+	// 	return err
+	// }
+	// c.LnTCP.Write([]byte("しめさばくんありがとう"))
+	// log.Println(n)
 	return nil
 }
