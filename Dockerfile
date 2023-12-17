@@ -1,5 +1,5 @@
 # Use golang 1.21 as the builder stage
-FROM golang:1.21 AS builder
+FROM golang:1.21-alpine3.19 AS builder
 
 # Set the working directory inside the container
 WORKDIR /go/src
@@ -24,8 +24,11 @@ ENV REDIS_ADDRESS 10.119.201.214:6379
 ENV REDIS_DB 0
 ENV REDIS_POOL_SIZE 10000
 
+WORKDIR /usr/local/bin
+
+
 # Copy the compiled server from the builder stage
-COPY --from=builder /go/src/server /usr/local/bin/server
+COPY --from=builder /go/src/server /usr/local/bin
 
 # Install CA certificates, required for TLS/SSL
 RUN apk add --no-cache ca-certificates
