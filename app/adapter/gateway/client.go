@@ -29,7 +29,7 @@ func (c *ClientRepository) JoinRoom(ctx context.Context, roomID string, client *
 	if err != nil {
 		return err
 	}
-	if err := json.Unmarshal([]byte(value), &Client{}); err != nil {
+	if err := json.Unmarshal([]byte(value), clients); err != nil {
 		return err
 	}
 	clients.Clients = append(clients.Clients, *client)
@@ -51,7 +51,7 @@ func (c *ClientRepository) ExitRoom(ctx context.Context, roomID string, client *
 	if err != nil {
 		return err
 	}
-	if err := json.Unmarshal([]byte(value), &Client{}); err != nil {
+	if err := json.Unmarshal([]byte(value), clients); err != nil {
 		return err
 	}
 	clients.Clients = remove(clients.Clients, *client)
@@ -71,4 +71,28 @@ func remove(s []net.UDPAddr, sv net.UDPAddr) []net.UDPAddr {
 		}
 	}
 	return result
+}
+func (c *ClientRepository) SelectPresenter(ctx context.Context, roomID string, presenter string) error {
+	key := "pst" + roomID
+	go c.InMemoryRepo.Set(ctx, key, presenter)
+	_, err := c.DataStoreRepo.Set(ctx, key, presenter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *ClientRepository) GetPresenter(ctx context.Context, roomID string) (string, error) {
+	key := "pst" + roomID
+	var presenter string
+	value, found := c.InMemoryRepo.Get(ctx, key)
+	if !found {
+		data, err := c.DataStoreRepo.Get(ctx, key)
+		if err != nil {
+			return "", err
+		}
+		value = data
+	}
+	presenter = value.(string)
+	return presenter, nil
 }

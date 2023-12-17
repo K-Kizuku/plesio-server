@@ -56,11 +56,11 @@ func (c *UDPController) Run(ctx context.Context) error {
 	}
 	switch req.Type {
 	case "AA":
-		if err := c.MeetingController.BroadcastMessage(ctx, req.Header.RoomID, req.Header.RoomID, addr, c.LnUDP); err != nil {
+		if err := c.MeetingController.BroadcastMessage(ctx, req.Header.RoomID, req.Body.Content, addr, c.LnUDP); err != nil {
 			return err
 		}
 	case "audio":
-		if err := c.MeetingController.BroadcastAudio(ctx, req.Header.RoomID, req.Header.RoomID, addr, c.LnUDP); err != nil {
+		if err := c.MeetingController.BroadcastAudio(ctx, req.Header.RoomID, req.Body.Content, addr, c.LnUDP); err != nil {
 			return err
 		}
 	case "comment":
@@ -75,6 +75,10 @@ func (c *UDPController) Run(ctx context.Context) error {
 		}
 	case "exit_room":
 		if err := c.MeetingController.ExitRoom(ctx, req.Header.RoomID, addr, c.LnUDP); err != nil {
+			return err
+		}
+	case "select_presenter":
+		if err := c.MeetingController.SelectPresenter(ctx, req.Header.RoomID, req.Header.WantClientID, c.LnUDP); err != nil {
 			return err
 		}
 

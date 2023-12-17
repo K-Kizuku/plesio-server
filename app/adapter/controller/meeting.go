@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net"
 
 	"github.com/K-Kizuku/plesio-server/app/usecase"
@@ -17,8 +18,9 @@ type IMeetingController interface {
 	CreateRoom(ctx context.Context, client *net.UDPAddr, ln *net.UDPConn) error
 	JoinRoom(ctx context.Context, roomID string, client *net.UDPAddr, ln *net.UDPConn) error
 	ExitRoom(ctx context.Context, roomID string, client *net.UDPAddr, ln *net.UDPConn) error
-	BroadcastMessage(ctx context.Context, roomID string, message string, target *net.UDPAddr, ln *net.UDPConn) error
+	BroadcastMessage(ctx context.Context, roomID string, message string, me *net.UDPAddr, ln *net.UDPConn) error
 	BroadcastAudio(ctx context.Context, roomID string, message string, me *net.UDPAddr, ln *net.UDPConn) error
+	SelectPresenter(ctx context.Context, roomID string, presenter string, ln *net.UDPConn) error
 }
 
 func NewMeetingContrallor(meetingUsecase usecase.IMeetingUsecase) IMeetingController {
@@ -102,13 +104,17 @@ func (m *MeetingController) ExitRoom(ctx context.Context, roomID string, client 
 	return nil
 }
 
-func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string, message string, target *net.UDPAddr, ln *net.UDPConn) error {
+func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string, message string, me *net.UDPAddr, ln *net.UDPConn) error {
 	clients := m.MeetingUsecase.GetClients(ctx, roomID)
+	presenter, err := m.MeetingUsecase.GetPresenter(ctx, roomID, me)
+	if err != nil {
+		return err
+	}
 	res := &Protocol{
 		Type: "AA",
 		Header: Header{
 			RoomID:       roomID,
-			WantClientID: target.String(),
+			WantClientID: presenter,
 		},
 		Body: Body{
 			Content: message,
@@ -120,7 +126,7 @@ func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string,
 	}
 	for _, client := range clients {
 		client := client
-		if target.String() == client.String() {
+		if presenter == client.String() {
 			if _, err := ln.WriteToUDP(b, &client); err != nil {
 				return err
 			}
@@ -128,7 +134,7 @@ func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string,
 		}
 	}
 
-	return nil
+	return errors.New("no broadcast message in room:" + roomID)
 }
 
 func (m *MeetingController) BroadcastAudio(ctx context.Context, roomID string, message string, me *net.UDPAddr, ln *net.UDPConn) error {
@@ -161,6 +167,13 @@ func (m *MeetingController) BroadcastAudio(ctx context.Context, roomID string, m
 		})
 	}
 	if err := eg.Wait(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *MeetingController) SelectPresenter(ctx context.Context, roomID string, presenter string, ln *net.UDPConn) error {
+	if err := m.MeetingUsecase.SelectPresenter(ctx, roomID, presenter); err != nil {
 		return err
 	}
 	return nil
