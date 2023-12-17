@@ -26,7 +26,13 @@ func NewDataStoreClient() repository.IDataStoreRepository {
 
 func (c *Client) Get(ctx context.Context, key string) (string, error) {
 	val, err := c.Con.Get(ctx, key).Result()
-	return val, err
+	if err != nil {
+		if err == redis.Nil {
+			return "", nil
+		}
+		return "", err
+	}
+	return val, nil
 }
 
 func (c *Client) Set(ctx context.Context, key, value string) (string, error) {
