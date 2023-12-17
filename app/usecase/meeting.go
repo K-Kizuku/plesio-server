@@ -17,6 +17,8 @@ type IMeetingUsecase interface {
 	JoinRoom(ctx context.Context, roomID string, client *net.UDPAddr) error
 	ExitRoom(ctx context.Context, roomID string, client *net.UDPAddr) error
 	GetClients(ctx context.Context, roomID string) []net.UDPAddr
+	GetPresenter(ctx context.Context, roomID string, me *net.UDPAddr) (string, error)
+	SelectPresenter(ctx context.Context, roomID string, presenter string) error
 }
 
 func NewMeetingUsecase(clientRepository repository.IClientRepository, roomRepository repository.IRoomRepository) IMeetingUsecase {
@@ -51,4 +53,17 @@ func (m *MeetingUsecase) GetClients(ctx context.Context, roomID string) []net.UD
 	return m.RoomRepository.GetClients(ctx, roomID)
 }
 
-// func (m *MeetingUsecase) Broadcast(ctx context.Context, message any)
+func (m *MeetingUsecase) GetPresenter(ctx context.Context, roomID string, me *net.UDPAddr) (string, error) {
+	presenter, err := m.ClientRepository.GetPresenter(ctx, roomID)
+	if err != nil {
+		return "", err
+	}
+	if presenter == "" {
+		presenter = me.String()
+	}
+	return presenter, nil
+}
+
+func (m *MeetingUsecase) SelectPresenter(ctx context.Context, roomID string, presenter string) error {
+	return m.ClientRepository.SelectPresenter(ctx, roomID, presenter)
+}
