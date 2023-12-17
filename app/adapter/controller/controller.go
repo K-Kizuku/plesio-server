@@ -48,7 +48,9 @@ func (c *UDPController) Run(ctx context.Context) error {
 	}
 	req := &Protocol{}
 	buf := strings.Trim(string(buf), "\x00")
+
 	if err := json.Unmarshal([]byte(buf), req); err != nil {
+		log.Print(buf)
 		return err
 	}
 	switch req.Type {
