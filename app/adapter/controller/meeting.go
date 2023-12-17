@@ -110,6 +110,9 @@ func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string,
 	if err != nil {
 		return err
 	}
+	if presenter != me.String() {
+		return nil
+	}
 	res := &Protocol{
 		Type: "AA",
 		Header: Header{
@@ -126,11 +129,8 @@ func (m *MeetingController) BroadcastMessage(ctx context.Context, roomID string,
 	}
 	for _, client := range clients {
 		client := client
-		if presenter == client.String() {
-			if _, err := ln.WriteToUDP(b, &client); err != nil {
-				return err
-			}
-			return nil
+		if _, err := ln.WriteToUDP(b, &client); err != nil {
+			return err
 		}
 	}
 
