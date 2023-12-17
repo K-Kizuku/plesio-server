@@ -57,6 +57,14 @@ func (m *MeetingController) JoinRoom(ctx context.Context, roomID string, client 
 		return err
 	}
 	clients := m.MeetingUsecase.GetClients(ctx, roomID)
+	roomData := make([]string, 0, 30)
+	for _, v := range clients {
+		roomData = append(roomData, v.String())
+	}
+	b, err := json.Marshal(roomData)
+	if err != nil {
+		return err
+	}
 	res := &Protocol{
 		Type: "join_room",
 		Header: Header{
@@ -64,7 +72,7 @@ func (m *MeetingController) JoinRoom(ctx context.Context, roomID string, client 
 			WantClientID: "",
 		},
 		Body: Body{
-			Content: roomID,
+			Content: string(b),
 		},
 	}
 	if err := m.broadcast(ctx, *res, clients, ln); err != nil {
