@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 
@@ -34,7 +35,8 @@ func (c *ClientRepository) JoinRoom(ctx context.Context, roomID string, client *
 	clients.Clients = append(clients.Clients, *client)
 	b, err := json.Marshal(clients)
 	if err != nil {
-		log.Println(err)
+		fmt.Print(clients)
+		return err
 	}
 	if _, err := c.DataStoreRepo.Set(ctx, roomID, string(b)); err != nil {
 		return err
