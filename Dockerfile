@@ -20,7 +20,12 @@ RUN go build -o server ./cmd/.
 # Use alpine 3.18 for the final stage
 FROM alpine:3.18 AS app
 
+ENV REDIS_ADDRESS 10.119.201.214:6379
+ENV REDIS_DB 0
+ENV REDIS_POOL_SIZE 10000
+
 WORKDIR /usr/local/bin
+
 
 # Copy the compiled server from the builder stage
 COPY --from=builder /go/src/server /usr/local/bin
